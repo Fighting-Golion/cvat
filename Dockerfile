@@ -1,5 +1,6 @@
 FROM ubuntu:20.04 as build-image
 
+# 构建参数，与 ENV 作用一致。不过作用域不一样。ARG 设置的环境变量仅对 Dockerfile 内有效，也就是说只有 docker build 的过程中有效，构建好的镜像内不存在此环境变量
 ARG http_proxy
 ARG https_proxy
 ARG no_proxy="nuclio,${no_proxy}"
@@ -29,6 +30,7 @@ ENV FFMPEG_VERSION=4.3.1 \
     OPENH264_VERSION=2.1.1
 
 WORKDIR /tmp/openh264
+# s是安静模式，不输出任何信息 L是自动跳转  其中--prefix选项是配置安装目录
 RUN curl -sL https://github.com/cisco/openh264/archive/v${OPENH264_VERSION}.tar.gz --output openh264-${OPENH264_VERSION}.tar.gz && \
     tar -zx --strip-components=1 -f openh264-${OPENH264_VERSION}.tar.gz && \
     make -j5 && make install PREFIX=${PREFIX} && make clean
