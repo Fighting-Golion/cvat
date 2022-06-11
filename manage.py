@@ -8,7 +8,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    print("xgl开启服务器端v3")
+    print("xgl开启服务器端v4")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cvat.settings.{}" \
         .format(os.environ.get("DJANGO_CONFIGURATION", "development")))
     try:

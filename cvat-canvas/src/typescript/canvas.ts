@@ -62,15 +62,30 @@ class CanvasImpl implements Canvas {
     private model: CanvasModel & Master;
     private controller: CanvasController;
     private view: CanvasView;
+    private map:any;
 
     public constructor() {
         this.model = new CanvasModelImpl();
         this.controller = new CanvasControllerImpl(this.model);
         this.view = new CanvasViewImpl(this.model, this.controller);
+
     }
 
     public html(): HTMLDivElement {
         return this.view.html();
+    }
+
+    public setBackgroud(_canvas:any):void{
+        this.view.setBackgroud(_canvas);
+    }
+
+    public setMap(_map:any):void{
+        this.map = _map;
+        this.view.setMap(_map);
+    }
+
+    public getMap():any{
+        return this.map;
     }
 
     public setup(frameData: any, objectStates: any[], zLayer = 0): void {

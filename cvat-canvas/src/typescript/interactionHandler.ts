@@ -14,6 +14,7 @@ import {
 } from './canvasModel';
 
 export interface InteractionHandler {
+    setMap(_map: any):any;
     transform(geometry: Geometry): void;
     interact(interactData: InteractionData): void;
     configurate(config: Configuration): void;
@@ -33,12 +34,19 @@ export class InteractionHandlerImpl implements InteractionHandler {
     private currentInteractionShape: SVG.Shape | null;
     private crosshair: Crosshair;
     private threshold: SVG.Rect | null;
+    private threshold2: SVG.Rect | null;
     private thresholdRectSize: number;
     private intermediateShape: PropType<InteractionData, 'intermediateShape'>;
     private drawnIntermediateShape: SVG.Shape;
     private thresholdWasModified: boolean;
+    private IntermediatePoints:any;
+    private map:any;
+    private intermediateGeoPoints:any;
+    private currentGeoShapePoints:any;
 
     private prepareResult(): InteractionResult[] {
+        // console.log('this.interactionShapes');
+        // console.log(this.interactionShapes);
         return this.interactionShapes.map(
             (shape: SVG.Shape): InteractionResult => {
                 if (shape.type === 'circle') {
@@ -102,24 +110,84 @@ export class InteractionHandlerImpl implements InteractionHandler {
         this.crosshair.hide();
     }
 
+
+    private convertShapesForInteractor(shapes: InteractionResult[], button: number): number[][] {
+        const reducer = (acc: number[][], _: number, index: number, array: number[]): number[][] => {
+            if (!(index % 2)) {
+                // 0, 2, 4
+                acc.push([array[index], array[index + 1]]);
+            }
+            return acc;
+        };
+
+        return shapes
+            .filter((shape: InteractionResult): boolean => shape.button === button)
+            .map((shape: InteractionResult): number[] => shape.points)
+            .flat()
+            .reduce(reducer, []);
+    }
+
+
+
     private interactPoints(): void {
+
         const eventListener = (e: MouseEvent): void => {
             if ((e.button === 0 || (e.button === 2 && this.interactionData.minNegVertices >= 0)) && !e.altKey) {
                 e.preventDefault();
                 const [cx, cy] = translateToSVG((this.canvas.node as any) as SVGSVGElement, [e.clientX, e.clientY]);
                 if (!this.isWithinFrame(cx, cy)) return;
                 if (!this.isWithinThreshold(cx, cy)) return;
-
+                console.log('====genarate a point!!!');
                 this.currentInteractionShape = this.canvas
-                    .circle((consts.BASE_POINT_SIZE * 2) / this.geometry.scale)
+                    .circle((consts.BASE_POINT_SIZE * 2) )
                     .center(cx, cy)
                     .fill('white')
                     .stroke(e.button === 0 ? 'green' : 'red')
                     .addClass('cvat_interaction_point')
                     .attr({
-                        'stroke-width': consts.POINTS_STROKE_WIDTH / this.geometry.scale,
+                        'stroke-width': consts.POINTS_STROKE_WIDTH ,
                     });
+                console.log('The clicked')
+                console.log([e.clientX, e.clientY])
+                if(this.threshold2){
+                    this.threshold2.center(cx, cy);
+                }else
+                {
+                    this.threshold2 = this.canvas
+                    .rect(this.thresholdRectSize, this.thresholdRectSize)
+                    .fill('none')
+                    .addClass('cvat_canvas_threshold');
+                    this.threshold2.center(cx,cy);
+                }
 
+
+                console.log('The clicked svg')
+                console.log([cx, cy])
+                console.log('The pressedPoints')
+                var pressedPoints = this.convertShapesForInteractor(this.prepareResult(), 0);
+                console.log(pressedPoints)
+                console.log('current intermediateShape points')
+                console.log(this.IntermediatePoints)
+                this.currentGeoShapePoints.push(this.map.getCoordinateFromPixel([cx, cy]))
+                console.log(this.currentGeoShapePoints)
+                //存入中间点
+                if(this.IntermediatePoints){
+                    for(var i=this.intermediateGeoPoints.length;i<this.IntermediatePoints.length-1;i++){
+                        this.intermediateGeoPoints.push(this.map.getCoordinateFromPixel(this.IntermediatePoints[i]));
+                        // this.intermediateGeoPoints.push(this.IntermediatePoints[i]);
+                        // if(lastPressedPoint.toString()===this.IntermediatePoints[i].toString()){
+                        //     startTransform=true;
+                        //     console.log('find out!!!')
+                        //     console.log('the index')
+                        //     console.log(i)
+                        // }
+                    }
+                }
+                this.intermediateGeoPoints.push(this.map.getCoordinateFromPixel([cx, cy]));
+
+
+                console.log('this.intermediateGeoPoints')
+                console.log(this.intermediateGeoPoints)
                 this.interactionShapes.push(this.currentInteractionShape);
                 this.shapesWereUpdated = true;
                 if (this.shouldRaiseEvent(e.ctrlKey)) {
@@ -136,8 +204,8 @@ export class InteractionHandlerImpl implements InteractionHandler {
 
                     self.addClass('cvat_canvas_removable_interaction_point');
                     self.attr({
-                        'stroke-width': consts.POINTS_SELECTED_STROKE_WIDTH / this.geometry.scale,
-                        r: (consts.BASE_POINT_SIZE * 1.5) / this.geometry.scale,
+                        'stroke-width': consts.POINTS_SELECTED_STROKE_WIDTH ,
+                        r: (consts.BASE_POINT_SIZE * 1.5) ,
                     });
 
                     self.on('mousedown', (_e: MouseEvent): void => {
@@ -161,8 +229,8 @@ export class InteractionHandlerImpl implements InteractionHandler {
                 self.on('mouseleave', (): void => {
                     self.removeClass('cvat_canvas_removable_interaction_point');
                     self.attr({
-                        'stroke-width': consts.POINTS_STROKE_WIDTH / this.geometry.scale,
-                        r: consts.BASE_POINT_SIZE / this.geometry.scale,
+                        'stroke-width': consts.POINTS_STROKE_WIDTH ,
+                        r: consts.BASE_POINT_SIZE ,
                     });
 
                     self.off('mousedown');
@@ -175,6 +243,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
     }
 
     private interactRectangle(shouldFinish: boolean, onContinue?: () => void): void {
+        console.log('interactRectangle');
         let initialized = false;
         const eventListener = (e: MouseEvent): void => {
             if (e.button === 0 && !e.altKey) {
@@ -219,7 +288,11 @@ export class InteractionHandlerImpl implements InteractionHandler {
         } else if (this.threshold) {
             this.threshold.remove();
             this.threshold = null;
+        }else if (this.threshold2){
+            this.threshold2.remove();
+            this.threshold2 = null;
         }
+
     }
 
     private startInteraction(): void {
@@ -252,9 +325,17 @@ export class InteractionHandlerImpl implements InteractionHandler {
             this.threshold = null;
         }
 
+        if (this.threshold2) {
+            this.threshold2.remove();
+            this.threshold2 = null;
+        }
+
         this.canvas.off('mousedown.interaction');
         this.interactionShapes.forEach((shape: SVG.Shape): SVG.Shape => shape.remove());
         this.interactionShapes = [];
+        this.IntermediatePoints = [];
+        this.intermediateGeoPoints = [];
+        this.currentGeoShapePoints = [];
         if (this.currentInteractionShape) {
             this.currentInteractionShape.remove();
             this.currentInteractionShape = null;
@@ -281,23 +362,87 @@ export class InteractionHandlerImpl implements InteractionHandler {
         return imageX >= 0 && imageX < width && imageY >= 0 && imageY < height;
     }
 
+
+    private  PointsTrans(arr:number[]) {
+        let newArr = [];
+        const total = Math.ceil(arr.length / 2);
+        var a:number[];
+        for (let i = 0; i < total; i++) {
+            a = arr.slice(i * 2, (i + 1) * 2);
+            newArr.push(a);
+        }
+        return newArr;
+    }
+
+    private PointsFlat(arr:any){
+        let newArr = [];
+        for (let i = 0; i < arr.length; i++) {
+            newArr.push(arr[i][0]);
+            newArr.push(arr[i][1]);
+        }
+        return newArr;
+    }
+
+
     private updateIntermediateShape(): void {
         const { intermediateShape, geometry } = this;
         if (this.drawnIntermediateShape) {
             this.selectize(false, this.drawnIntermediateShape);
             this.drawnIntermediateShape.remove();
         }
-
+        if(this.interactionShapes){
+            this.interactionShapes.forEach((shape: SVG.Shape): SVG.Shape => shape.remove());
+            this.interactionShapes = [];
+        }
+        console.log(this.map);
+        console.log('tranforming!!!')
+        // this.currentGeoShapePoints.forEach(this.GeoToCircle);
+        for(var i=0;i<this.currentGeoShapePoints.length;i++){
+            const [cx, cy] = this.map.getPixelFromCoordinate(this.currentGeoShapePoints[i]);
+                    this.interactionShapes.push(
+                        this.canvas
+                        .circle((consts.BASE_POINT_SIZE * 2) )
+                        .center(cx, cy)
+                        .fill('white')
+                        .stroke('green')
+                        .addClass('cvat_interaction_point')
+                        .attr({
+                            'stroke-width': consts.POINTS_STROKE_WIDTH ,
+                        })
+                    )
+        }
         if (!intermediateShape) return;
         const { shapeType, points } = intermediateShape;
+        if(points){
+            this.IntermediatePoints = this.PointsTrans(points);
+        }
+        else
+        {
+            this.IntermediatePoints = [];
+        }
+        var new_points = [];
+        console.log(this.map);
+        for(var i:number=0;i<this.intermediateGeoPoints.length;i++){
+            new_points.push(this.map.getPixelFromCoordinate(this.intermediateGeoPoints[i]));
+        }
+        for(var i:number=this.intermediateGeoPoints.length;i<this.IntermediatePoints.length;i++){
+            new_points.push(this.IntermediatePoints[i]);
+        }
+
+
+
+        // for(var i=this.intermediateGeoPoints.length;i<){
+
+        // }
         if (shapeType === 'polygon') {
+            console.log('Drawn')
             const erroredShape = shapeType === 'polygon' && points.length < 3 * 2;
             this.drawnIntermediateShape = this.canvas
-                .polygon(stringifyPoints(translateToCanvas(geometry.offset, points)))
+                .polygon(stringifyPoints(translateToCanvas(geometry.offset, this.PointsFlat(new_points))))
                 .attr({
                     'color-rendering': 'optimizeQuality',
                     'shape-rendering': 'geometricprecision',
-                    'stroke-width': consts.BASE_STROKE_WIDTH / this.geometry.scale,
+                    'stroke-width': consts.BASE_STROKE_WIDTH ,
                     stroke: erroredShape ? 'red' : 'black',
                 })
                 .fill({ opacity: this.configuration.creationOpacity, color: 'white' })
@@ -317,7 +462,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
         if (value) {
             (shape as any).selectize(value, {
                 deepSelect: true,
-                pointSize: consts.BASE_POINT_SIZE / self.geometry.scale,
+                pointSize: consts.BASE_POINT_SIZE ,
                 rotationPoint: false,
                 classPoints: 'cvat_canvas_interact_intermediate_shape_point',
                 pointType(cx: number, cy: number): SVG.Circle {
@@ -328,7 +473,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
                         .center(cx, cy)
                         .attr({
                             'fill-opacity': 1,
-                            'stroke-width': consts.POINTS_STROKE_WIDTH / self.geometry.scale,
+                            'stroke-width': consts.POINTS_STROKE_WIDTH ,
                         });
                 },
             });
@@ -389,24 +534,28 @@ export class InteractionHandlerImpl implements InteractionHandler {
             shapesUpdated?: boolean,
             isDone?: boolean,
             threshold?: number,
+            GeoPoints?: any,
         ) => void,
         canvas: SVG.Container,
         geometry: Geometry,
         configuration: Configuration,
     ) {
-        this.onInteraction = (shapes: InteractionResult[] | null, shapesUpdated?: boolean, isDone?: boolean): void => {
+        this.onInteraction = (shapes: InteractionResult[] | null, shapesUpdated?: boolean, isDone?: boolean,GeoPoints?:any): void => {
             this.shapesWereUpdated = false;
-            onInteraction(shapes, shapesUpdated, isDone, this.threshold ? this.thresholdRectSize / 2 : null);
+            onInteraction(shapes, shapesUpdated, isDone, this.threshold ? this.thresholdRectSize / 2 : null,GeoPoints);
         };
         this.canvas = canvas;
         this.configuration = configuration;
         this.geometry = geometry;
         this.shapesWereUpdated = false;
         this.interactionShapes = [];
+        this.intermediateGeoPoints = [];
+        this.currentGeoShapePoints = [];
         this.interactionData = { enabled: false };
         this.currentInteractionShape = null;
         this.crosshair = new Crosshair();
         this.threshold = null;
+        this.threshold2 = null;
         this.thresholdRectSize = 300;
         this.intermediateShape = null;
         this.drawnIntermediateShape = null;
@@ -438,12 +587,50 @@ export class InteractionHandlerImpl implements InteractionHandler {
                         ],
                         true,
                         false,
+                        this.intermediateGeoPoints,
                     );
                 }
             }
         });
 
         this.canvas.on('wheel.interaction', (e: WheelEvent): void => {
+            // console.log('wheel event!');
+            // console.log(this.interactionShapes);
+            // if (this.currentInteractionShape) {
+            //     this.currentInteractionShape.remove();
+            //     this.currentInteractionShape = null;
+            // }
+
+
+            if (this.interactionShapes.length) {
+                const ToInteract = this.onInteraction;
+                const To1 = this.prepareResult();
+                const To2 = this.intermediateGeoPoints;
+                setTimeout(function (){
+                    console.log('wheel interact!');
+                    ToInteract(
+                            To1,
+                            true,
+                            false,
+                            To2,
+                        );
+                }
+            ,500)
+            }
+
+            if(this.currentGeoShapePoints.length){
+                setTimeout(function (){
+                    const [cx, cy] = this.map.getPixelFromCoordinate(this.currentGeoShapePoints[this.currentGeoShapePoints.length-1]);
+                    if(this.threshold2){
+                        this.threshold2.center(cx,cy);
+                    }
+                }.bind(this),
+                500
+                )
+            }
+
+
+
             if (e.ctrlKey) {
                 if (this.threshold) {
                     this.thresholdWasModified = true;
@@ -471,6 +658,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
             this.crosshair.scale(this.geometry.scale);
         }
 
+        //交互point
         const shapesToBeScaled = this.currentInteractionShape ?
             [...this.interactionShapes, this.currentInteractionShape] :
             [...this.interactionShapes];
@@ -488,11 +676,14 @@ export class InteractionHandlerImpl implements InteractionHandler {
             }
         }
 
+
+        //new point
         for (const element of window.document.getElementsByClassName('cvat_canvas_interact_intermediate_shape_point')) {
             element.setAttribute('stroke-width', `${consts.POINTS_STROKE_WIDTH / (2 * this.geometry.scale)}`);
             element.setAttribute('r', `${consts.BASE_POINT_SIZE / this.geometry.scale}`);
         }
 
+        //交互line
         if (this.drawnIntermediateShape) {
             this.drawnIntermediateShape.stroke({ width: consts.BASE_STROKE_WIDTH / this.geometry.scale });
         }
@@ -501,6 +692,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
     public interact(interactionData: InteractionData): void {
         if (interactionData.intermediateShape) {
             this.intermediateShape = interactionData.intermediateShape;
+            console.log('update intermediate shape')
             this.updateIntermediateShape();
             if (this.interactionData.startWithBox) {
                 this.interactionShapes[0].style({ visibility: 'hidden' });
@@ -513,7 +705,7 @@ export class InteractionHandlerImpl implements InteractionHandler {
             this.initInteraction();
             this.startInteraction();
         } else {
-            this.onInteraction(this.prepareResult(), this.shouldRaiseEvent(false), true);
+            this.onInteraction(this.prepareResult(), this.shouldRaiseEvent(false), true,this.intermediateGeoPoints);
             this.release();
             this.interactionData = interactionData;
         }
@@ -546,5 +738,9 @@ export class InteractionHandlerImpl implements InteractionHandler {
     public destroy(): void {
         window.document.removeEventListener('keyup', this.onKeyUp);
         window.document.removeEventListener('keydown', this.onKeyDown);
+    }
+
+    public setMap(_map: any): void {
+        this.map = _map;
     }
 }

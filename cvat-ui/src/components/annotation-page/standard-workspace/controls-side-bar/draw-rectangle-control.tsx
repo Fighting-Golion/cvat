@@ -4,7 +4,7 @@
 
 import React from 'react';
 import Popover from 'antd/lib/popover';
-import Icon from '@ant-design/icons';
+import Icon,{AppstoreFilled} from '@ant-design/icons';
 
 import { Canvas } from 'cvat-canvas-wrapper';
 import { RectangleIcon } from 'icons';
@@ -42,7 +42,7 @@ function DrawRectangleControl(props: Props): JSX.Element {
         };
 
     return disabled ? (
-        <Icon className='cvat-draw-rectangle-control cvat-disabled-canvas-control' component={RectangleIcon} />
+        <Icon className='cvat-draw-rectangle-control cvat-disabled-canvas-control' component={AppstoreFilled} style={{ fontSize: '40px' }} />
     ) : (
         <CustomPopover
             {...dynamcPopoverPros}
@@ -50,7 +50,7 @@ function DrawRectangleControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.RECTANGLE} />}
         >
-            <Icon {...dynamicIconProps} component={RectangleIcon} />
+            <Icon {...dynamicIconProps} component={AppstoreFilled} style={{ fontSize: '40px' }} />
         </CustomPopover>
     );
 }

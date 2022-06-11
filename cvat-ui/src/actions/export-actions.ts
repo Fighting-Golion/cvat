@@ -40,6 +40,8 @@ export const exportDatasetAsync = (
 
     try {
         const url = await instance.annotations.exportDataset(format, saveImages, name);
+        console.log('download url!');
+        console.log(url);
         const downloadAnchor = window.document.getElementById('downloadAnchor') as HTMLAnchorElement;
         downloadAnchor.href = url;
         downloadAnchor.click();

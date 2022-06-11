@@ -82,9 +82,9 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
 
         previewImageElement.src = previewImage;
         previewImageElement.alt = 'Preview';
-        if (previewWrapperRef.current) {
-            previewWrapperRef.current.appendChild(previewImageElement);
-        }
+        // if (previewWrapperRef.current) {
+        //     previewWrapperRef.current.appendChild(previewImageElement);
+        // }
 
         getReposData(taskInstance.id)
             .then((data): void => {
@@ -193,13 +193,13 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
             <Row className='cvat-task-details-user-block' justify='space-between' align='middle'>
                 <Col span={12}>
                     {owner && (
-                        <Text type='secondary'>{`Task #${taskInstance.id} Created by ${owner} on ${created}`}</Text>
+                        <Text type='secondary'>{`Task #${taskInstance.id}由${owner}创建于${created}`}</Text>
                     )}
                 </Col>
-                <Col span={10}>
+                {/* <Col span={10}>
                     <Text type='secondary'>Assigned to</Text>
                     {assigneeSelect}
-                </Col>
+                </Col> */}
             </Row>
         );
     }
@@ -345,18 +345,18 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
                     <Col className='cvat-task-details-task-name'>{this.renderTaskName()}</Col>
                 </Row>
                 <Row justify='space-between' align='top'>
-                    <Col md={8} lg={7} xl={7} xxl={6}>
+                    {/* <Col md={8} lg={7} xl={7} xxl={6}>
                         <Row justify='start' align='middle'>
                             <Col span={24}>{this.renderPreview()}</Col>
                         </Row>
                         <Row>
                             <Col span={24}>{this.renderParameters()}</Col>
                         </Row>
-                    </Col>
+                    </Col> */}
                     <Col md={16} lg={17} xl={17} xxl={18}>
                         {this.renderDescription()}
                         <Row justify='space-between' align='middle'>
-                            <Col span={12}>
+                            {/* <Col span={12}>
                                 <BugTrackerEditor
                                     instance={taskInstance}
                                     onChange={(bugTracker) => {
@@ -364,13 +364,13 @@ export default class DetailsComponent extends React.PureComponent<Props, State> 
                                         onTaskUpdate(taskInstance);
                                     }}
                                 />
-                            </Col>
-                            <Col span={10}>
+                            </Col> */}
+                            {/* <Col span={10}>
                                 <AutomaticAnnotationProgress
                                     activeInference={activeInference}
                                     cancelAutoAnnotation={cancelAutoAnnotation}
                                 />
-                            </Col>
+                            </Col> */}
                         </Row>
                         {this.renderDatasetRepository()}
                         {!taskInstance.projectId && this.renderLabelsEditor()}

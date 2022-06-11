@@ -1,12 +1,16 @@
 // Copyright (C) 2021 Intel Corporation
 //
 // SPDX-License-Identifier: MIT
+import VectorLayer from 'ol/layer/Vector';
+import Polygon from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
+import VectorSource from 'ol/source/Vector';
 
 import React from 'react';
 import { connect } from 'react-redux';
 import { Row, Col } from 'antd/lib/grid';
 import Popover from 'antd/lib/popover';
-import Icon, { AreaChartOutlined, ScissorOutlined } from '@ant-design/icons';
+import Icon, { AreaChartOutlined, ScissorOutlined,BulbFilled } from '@ant-design/icons';
 import Text from 'antd/lib/typography/Text';
 import Tabs from 'antd/lib/tabs';
 import Button from 'antd/lib/button';
@@ -123,6 +127,12 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
     private activeTool: IntelligentScissors | null;
     private latestPoints: number[];
     private canvasForceUpdateWasEnabled: boolean;
+    private map:any;
+    private vectorLayer:any;
+    private lastGeoPoints:any;
+    private mapKey:any;
+    private pressedPoints:any;
+    private points:any;
 
     public constructor(props: Props & DispatchToProps) {
         super(props);
@@ -143,6 +153,8 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
 
     public componentDidMount(): void {
         const { canvasInstance } = this.props;
+        this.lastGeoPoints = [];
+
         canvasInstance.html().addEventListener('canvas.interacted', this.interactionListener);
         canvasInstance.html().addEventListener('canvas.setup', this.runImageModifier);
     }
@@ -193,67 +205,114 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
     }
 
     private interactionListener = async (e: Event): Promise<void> => {
+
+
         const { approxPolyAccuracy } = this.state;
         const {
             createAnnotations, isActivated, jobInstance, frame, labels, curZOrder, canvasInstance, toolsBlockerState,
         } = this.props;
+
+        this.map = canvasInstance.getMap();
+
+
         const { activeLabelID } = this.state;
         if (!isActivated || !this.activeTool) {
             return;
         }
 
         const {
-            shapesUpdated, isDone, threshold, shapes,
+            shapesUpdated, isDone, threshold, shapes ,geoPoints,
         } = (e as CustomEvent).detail;
-        const pressedPoints = convertShapesForInteractor(shapes, 0).flat();
+        console.log('opencv-control');
+        console.log(geoPoints);
+        this.pressedPoints = convertShapesForInteractor(shapes, 0).flat();
+        console.log('pressedPoints');
+        console.log(this.pressedPoints);
         try {
             if (shapesUpdated) {
-                this.latestPoints = await this.runCVAlgorithm(pressedPoints,
+                this.latestPoints = await this.runCVAlgorithm(this.pressedPoints,
                     toolsBlockerState.algorithmsLocked ? 0 : threshold);
-                let points = [];
+                this.points = [];
                 if (toolsBlockerState.algorithmsLocked && this.latestPoints.length > 2) {
                     // disable approximation for lastest two points to disable fickering
                     const [x, y] = this.latestPoints.slice(-2);
                     this.latestPoints.splice(this.latestPoints.length - 2, 2);
-                    points = openCVWrapper.contours.approxPoly(
+                    this.points = openCVWrapper.contours.approxPoly(
                         this.latestPoints,
                         thresholdFromAccuracy(approxPolyAccuracy),
                         false,
                     );
-                    points.push([x, y]);
+                    this.points.push([x, y]);
                 } else {
-                    points = openCVWrapper.contours.approxPoly(
+                    this.points = openCVWrapper.contours.approxPoly(
                         this.latestPoints,
                         thresholdFromAccuracy(approxPolyAccuracy),
                         false,
                     );
+
                 }
+                // console.log('points');
+                // console.log(this.points);
+
+
                 canvasInstance.interact({
                     enabled: true,
                     intermediateShape: {
                         shapeType: ShapeType.POLYGON,
-                        points: points.flat(),
+                        points: this.points.flat(),
                     },
                 });
             }
 
             if (isDone) {
                 // need to recalculate without the latest sliding point
-                const finalPoints = await this.runCVAlgorithm(pressedPoints,
+                console.log('isDone')
+                console.log(geoPoints)
+                const finalPoints = await this.runCVAlgorithm(this.pressedPoints,
                     toolsBlockerState.algorithmsLocked ? 0 : threshold);
+                const contourtPoints =  openCVWrapper.contours.approxPoly(finalPoints, thresholdFromAccuracy(approxPolyAccuracy));
+
+                var new_points = [];
+                for(var i:number=0;i<geoPoints.length;i++){
+                    new_points.push(this.map.getPixelFromCoordinate(geoPoints[i]));
+                }
+                for(var i:number=geoPoints.length;i<contourtPoints.length;i++){
+                    new_points.push(contourtPoints[i]);
+                }
+
+
+
+                for(var i:number=geoPoints.length;i<contourtPoints.length;i++){
+                    geoPoints.push(this.map.getCoordinateFromPixel(contourtPoints[i]));
+                }
+
+                var geoWrap = [];
+                geoWrap.push(geoPoints);
+                var polygon = new Polygon(geoWrap);
+                var feature = new Feature(polygon);
+
+                var vectorSource = new VectorSource();
+                vectorSource.addFeature(feature);
+
+
+                this.vectorLayer = new VectorLayer({
+                source: vectorSource
+                });
+                // this.map.addLayer(this.vectorLayer);
+
                 const finalObject = new core.classes.ObjectState({
                     frame,
                     objectType: ObjectType.SHAPE,
                     shapeType: ShapeType.POLYGON,
                     label: labels.filter((label: any) => label.id === activeLabelID)[0],
-                    points: openCVWrapper.contours
-                        .approxPoly(finalPoints, thresholdFromAccuracy(approxPolyAccuracy))
-                        .flat(),
+                    points: geoPoints.flat(),
                     occluded: false,
                     zOrder: curZOrder,
                 });
+
                 createAnnotations(jobInstance, frame, [finalObject]);
             }
+
         } catch (error) {
             notification.error({
                 description: error.toString(),
@@ -403,7 +462,7 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
                 </Row>
                 <Row justify='start' className='cvat-opencv-drawing-tools'>
                     <Col>
-                        <CVATTooltip title='Intelligent scissors' className='cvat-opencv-drawing-tool'>
+                        <CVATTooltip title='开始运行' className='cvat-opencv-drawing-tool'>
                             <Button
                                 onClick={() => {
                                     this.activeTool = openCVWrapper.segmentation
@@ -463,18 +522,18 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
                 <Row justify='start'>
                     <Col>
                         <Text className='cvat-text-color' strong>
-                            OpenCV
+                            智能剪刀
                         </Text>
                     </Col>
                 </Row>
                 {libraryInitialized ? (
                     <Tabs tabBarGutter={8}>
-                        <Tabs.TabPane key='drawing' tab='Drawing' className='cvat-opencv-control-tabpane'>
+                        <Tabs.TabPane key='drawing' tab='绘制' className='cvat-opencv-control-tabpane'>
                             {this.renderDrawingContent()}
                         </Tabs.TabPane>
-                        <Tabs.TabPane key='image' tab='Image' className='cvat-opencv-control-tabpane'>
+                        {/* <Tabs.TabPane key='image' tab='Image' className='cvat-opencv-control-tabpane'>
                             {this.renderImageContent()}
-                        </Tabs.TabPane>
+                        </Tabs.TabPane> */}
                     </Tabs>
                 ) : (
                     <>
@@ -505,7 +564,7 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
                                         }
                                     }}
                                 >
-                                    Load OpenCV
+                                    加载智能剪刀
                                 </Button>
                             </Col>
                             {initializationProgress >= 0 && (
@@ -548,7 +607,7 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
             };
 
         return !labels.length ? (
-            <Icon className='cvat-opencv-control cvat-disabled-canvas-control' component={OpenCVIcon} />
+            <Icon className='cvat-opencv-control cvat-disabled-canvas-control' component={BulbFilled} style={{ fontSize: '40px' }} />
         ) : (
             <>
                 <CustomPopover
@@ -564,7 +623,7 @@ class OpenCVControlComponent extends React.PureComponent<Props & DispatchToProps
                         }
                     }}
                 >
-                    <Icon {...dynamicIconProps} component={OpenCVIcon} />
+                    <Icon {...dynamicIconProps} component={BulbFilled} style={{ fontSize: '40px' }} />
                 </CustomPopover>
                 {isActivated ? (
                     <ApproximationAccuracy

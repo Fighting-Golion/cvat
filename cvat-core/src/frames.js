@@ -149,6 +149,8 @@
     FrameData.prototype.data.implementation = async function (onServerRequest) {
         return new Promise((resolve, reject) => {
             const resolveWrapper = (data) => {
+	console.log("the data resolved");
+	console.log(data);
                 this._data = {
                     imageData: data,
                     renderWidth: this.width,
@@ -243,6 +245,7 @@
                 provider
                     .frame(this.number)
                     .then((frame) => {
+	       console.log(frame);
                         if (frame === null) {
                             onServerRequest();
                             const activeRequest = frameDataCache[this.tid].activeChunkRequest;

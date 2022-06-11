@@ -65,7 +65,7 @@ function LoginFormComponent(props: Props): JSX.Element {
                     htmlType='submit'
                     className='login-form-button'
                 >
-                    Sign in
+                    登入
                 </Button>
             </Form.Item>
         </Form>

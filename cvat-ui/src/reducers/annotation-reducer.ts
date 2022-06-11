@@ -633,7 +633,9 @@ export default (state = defaultState, action: AnyAction): AnnotationState => {
         }
         case AnnotationActionTypes.CREATE_ANNOTATIONS_SUCCESS: {
             const { states, history } = action.payload;
-
+            console.log('CREATE_ANNOTATIONS_SUCCESS')
+            console.log(states);
+            console.log(state.annotations);
             return {
                 ...state,
                 annotations: {

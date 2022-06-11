@@ -71,15 +71,16 @@ function ExportDatasetModal(): JSX.Element {
                     instance,
                     values.selectedFormat as string,
                     values.customName ? `${values.customName}.zip` : '',
-                    values.saveImages,
+                    // values.saveImages,
+                    true,
                 ),
             );
             closeModal();
             Notification.info({
-                message: 'Dataset export started',
-                description:
-                    `Dataset export was started for ${instanceType}. ` +
-                    'Download will start automaticly as soon as the dataset is ready.',
+                message: '标注文件正在导出',
+                // description:
+                //     `Dataset export was started for ${instanceType}. ` +
+                //     'Download will start automaticly as soon as the dataset is ready.',
                 className: `cvat-notification-notice-export-${instanceType.split(' ')[0]}-start`,
             });
         },
@@ -88,7 +89,7 @@ function ExportDatasetModal(): JSX.Element {
 
     return (
         <Modal
-            title={`Export ${instanceType} as a dataset`}
+            title={`导出标注`}
             visible={modalVisible}
             onCancel={closeModal}
             onOk={() => form.submit()}
@@ -103,7 +104,7 @@ function ExportDatasetModal(): JSX.Element {
                 initialValues={
                     {
                         selectedFormat: undefined,
-                        saveImages: false,
+                        saveImages: true,
                         customName: undefined,
                     } as FormValues
                 }
@@ -111,7 +112,7 @@ function ExportDatasetModal(): JSX.Element {
             >
                 <Form.Item
                     name='selectedFormat'
-                    label='Export format'
+                    label='导出形式'
                     rules={[{ required: true, message: 'Format must be selected' }]}
                 >
                     <Select placeholder='Select dataset format' className='cvat-modal-export-select'>
@@ -130,7 +131,7 @@ function ExportDatasetModal(): JSX.Element {
                                             className='cvat-modal-export-option-item'
                                         >
                                             <DownloadOutlined />
-                                            <Text disabled={disabled}>{dumper.name}</Text>
+                                            <Text disabled={disabled}>TIF</Text>
                                             {pending && <LoadingOutlined style={{ marginLeft: 10 }} />}
                                         </Select.Option>
                                     );
@@ -138,12 +139,12 @@ function ExportDatasetModal(): JSX.Element {
                             )}
                     </Select>
                 </Form.Item>
-                <Form.Item name='saveImages' valuePropName='checked' wrapperCol={{ offset: 8, span: 16 }}>
+                {/* <Form.Item name='saveImages' valuePropName='checked' wrapperCol={{ offset: 8, span: 16 }}>
                     <Checkbox>Save images</Checkbox>
-                </Form.Item>
-                <Form.Item label='Custom name' name='customName'>
+                </Form.Item> */}
+                <Form.Item label='文件名' name='customName'>
                     <Input
-                        placeholder='Custom name for a dataset'
+                        placeholder='导出标注的文件名'
                         suffix='.zip'
                         className='cvat-modal-export-filename-input'
                     />

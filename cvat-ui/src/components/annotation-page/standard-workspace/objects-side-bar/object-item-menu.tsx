@@ -201,7 +201,7 @@ function RemoveItem(props: ItemProps): JSX.Element {
                         }
                     }}
                 >
-                    Remove
+                    删除
                 </Button>
             </CVATTooltip>
         </Menu.Item>
@@ -229,7 +229,7 @@ export default function ItemMenu(props: Props): JSX.Element {
 
     return (
         <Menu className='cvat-object-item-menu' selectable={false}>
-            <CreateURLItem key={MenuKeys.CREATE_URL} toolProps={props} />
+            {/* <CreateURLItem key={MenuKeys.CREATE_URL} toolProps={props} />
             {!readonly && <MakeCopyItem key={MenuKeys.COPY} toolProps={props} />}
             {!readonly && <PropagateItem key={MenuKeys.PROPAGATE} toolProps={props} />}
             {is2D && !readonly && [ShapeType.POLYGON, ShapeType.POLYLINE, ShapeType.CUBOID].includes(shapeType) && (
@@ -246,7 +246,7 @@ export default function ItemMenu(props: Props): JSX.Element {
             )}
             {[ColorBy.INSTANCE, ColorBy.GROUP].includes(colorBy) && (
                 <SwitchColorItem key={MenuKeys.SWITCH_COLOR} toolProps={props} />
-            )}
+            )} */}
             {!readonly && <RemoveItem key={MenuKeys.REMOVE_ITEM} toolProps={props} />}
         </Menu>
     );

@@ -20,7 +20,7 @@ export default function ConstructorViewer(props: ConstructorViewerProps): JSX.El
     const { onCreate } = props;
     const list = [
         <Button key='create' type='ghost' onClick={onCreate} className='cvat-constructor-viewer-new-item'>
-            Add label
+            添加标注
             <PlusCircleOutlined />
         </Button>,
     ];

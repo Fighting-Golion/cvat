@@ -416,20 +416,21 @@ LOGGING = {
             'formatter': 'standard',
             'maxBytes': 1024*1024*50, # 50 MB
             'backupCount': 5,
-        },
-        'logstash': {
-            'level': 'INFO',
-            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
-            'formatter': 'logstash',
-            'transport': 'logstash_async.transport.HttpTransport',
-            'ssl_enable': False,
-            'ssl_verify': False,
-            'host': os.getenv('DJANGO_LOG_SERVER_HOST', 'localhost'),
-            'port': os.getenv('DJANGO_LOG_SERVER_PORT', 8080),
-            'version': 1,
-            'message_type': 'django',
-            'database_path': LOGSTASH_DB,
         }
+        # ,
+        # 'logstash': {
+        #     'level': 'INFO',
+        #     'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+        #     'formatter': 'logstash',
+        #     'transport': 'logstash_async.transport.HttpTransport',
+        #     'ssl_enable': False,
+        #     'ssl_verify': False,
+        #     'host': os.getenv('DJANGO_LOG_SERVER_HOST', 'localhost'),
+        #     'port': os.getenv('DJANGO_LOG_SERVER_PORT', 8080),
+        #     'version': 1,
+        #     'message_type': 'django',
+        #     'database_path': LOGSTASH_DB,
+        # }
     },
     'loggers': {
         'cvat.server': {

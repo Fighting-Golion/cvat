@@ -32,7 +32,7 @@ export default function TopBarComponent(props: VisibleTopBarProps): JSX.Element 
             <Col md={22} lg={18} xl={16} xxl={14}>
                 <Row justify='space-between' align='bottom'>
                     <Col>
-                        <Text className='cvat-title'>Tasks</Text>
+                        <Text className='cvat-title'>任务</Text>
                         <SearchField instance='task' onSearch={onSearch} query={query} />
                     </Col>
                     <Col>
@@ -55,7 +55,7 @@ export default function TopBarComponent(props: VisibleTopBarProps): JSX.Element 
                                         disabled={taskImporting}
                                         icon={<UploadOutlined />}
                                     >
-                                        Create from backup
+                                        上传任务
                                         {taskImporting && <LoadingOutlined id='cvat-import-task-button-loading' />}
                                     </Button>
                                 </Upload>
@@ -68,7 +68,7 @@ export default function TopBarComponent(props: VisibleTopBarProps): JSX.Element 
                                     onClick={(): void => history.push('/tasks/create')}
                                     icon={<PlusOutlined />}
                                 >
-                                    Create new task
+                                    创建新任务
                                 </Button>
                             </Col>
                         </Row>

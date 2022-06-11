@@ -20,7 +20,13 @@ import consts from 'consts';
 import CVATTooltip from 'components/common/cvat-tooltip';
 import ImageSetupsContent from './image-setups-content';
 import ContextImage from '../standard-workspace/context-image/context-image';
+import "ol/ol.css";
+import { Map, View } from "ol";
+import TileLayer from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
 
+import {transformExtent,fromLonLat} from 'ol/proj';
+import TileWMS  from 'ol/source/TileWMS';
 const cvat = getCore();
 
 const MAX_DISTANCE_TO_OPEN_SHAPE = 50;
@@ -119,7 +125,62 @@ export default class CanvasWrapperComponent extends React.PureComponent<Props> {
         // It's awful approach from the point of view React
         // But we do not have another way because cvat-canvas returns regular DOM element
         const [wrapper] = window.document.getElementsByClassName('cvat-canvas-container');
-        wrapper.appendChild(canvasInstance.html());
+//wrapper.appendChild(canvasInstance.html());
+var format = 'image/jpeg';
+var map = new Map({
+  target: 'map',
+  layers: [
+    new TileLayer({
+      source: new OSM()
+    }),
+    new TileLayer({
+      extent:transformExtent([99.56945,26.39000,101.89892,28.45112],'EPSG:4326','EPSG:3857'),
+          source: new TileWMS({
+            crossOrigin:'Anonymous',
+              ratio: 1,
+              url: "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/wms_server.map",
+              params: {
+                  'FORMAT': format,
+                  'VERSION': '1.1.1',
+                  'layers':'modis3',
+                  'srs':'epsg:32647',
+              },
+              serverType: "mapserver",
+          })
+      }),
+      new TileLayer({
+        extent:transformExtent([105.67304,37.86455,108.36725,39.91812],'EPSG:4326','EPSG:3857'),
+            source: new TileWMS({
+              crossOrigin:'Anonymous',
+                ratio: 1,
+                url: "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/Apache/htdocs/wms_server.map",
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    'layers':'modis_yellow',
+                    'srs':'epsg:32648',
+                },
+                serverType: "mapserver",
+            })
+        })
+  ],
+  view:   new View({
+        center:fromLonLat([99.58028, 28.48078]),
+        zoom: 10,
+        projection: "EPSG:3857",
+      }),
+//   new View({
+//     center:ol.proj.fromLonLat([99.58028, 28.48078]),
+//     zoom: 4,
+//     projection: "EPSG:3857",
+//   })
+});
+
+canvasInstance.setMap(map);
+
+setTimeout(function(){
+    canvasInstance.setBackgroud(window.document.getElementsByClassName('ol-layer')[0])
+},10000)
 
         canvasInstance.configure({
             smoothImage,
@@ -138,6 +199,16 @@ export default class CanvasWrapperComponent extends React.PureComponent<Props> {
         this.initialSetup();
         this.updateIssueRegions();
         this.updateCanvas();
+
+//     var canvasLayer1 = new ol.Overlay({
+//         element: window.document.getElementById('cvat_canvas_wrapper'),
+// 	stopEvent:false,
+// 	autoPan: true,
+// positioning: 'center-center',
+//         position:ol.proj.fromLonLat([99.5,26.3])
+//     });
+// map.addOverlay(canvasLayer1);
+
     }
 
     public componentDidUpdate(prevProps: Props): void {
@@ -839,6 +910,7 @@ export default class CanvasWrapperComponent extends React.PureComponent<Props> {
                     And it's a reason why cvat-canvas appended in mount function works
                 */}
                 <div
+	    id='map'
                     className='cvat-canvas-container'
                     style={{
                         overflow: 'hidden',

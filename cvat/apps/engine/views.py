@@ -71,15 +71,9 @@ from cvat.apps.iam.permissions import (CloudStoragePermission,
     CommentPermission, IssuePermission, JobPermission, ProjectPermission,
     TaskPermission, UserPermission)
 
-import logging
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 
-logger.info("Start print log(o)")
-logger.debug("Do something(o)")
-logger.warning("Something maybe fail.(o)")
-logger.info("Finish(o)")
+
 from cvat.apps.engine.cache import CacheInteraction
 
 
@@ -562,9 +556,7 @@ class DataChunkGetter:
             raise NotFound(detail='Cannot find requested data')
 
         frame_provider = FrameProvider(db_data, self.dimension)
-        logger.info("the self.type is below!!!!!!!!!!")
-        logger.info(self.type)
-        logger.info("==========================")
+
         if self.type == 'chunk':
             start_chunk = frame_provider.get_chunk_number(start)
             stop_chunk = frame_provider.get_chunk_number(stop)
@@ -580,10 +572,6 @@ class DataChunkGetter:
             # Follow symbol links if the chunk is a link on a real image otherwise
             # mimetype detection inside sendfile will work incorrectly.
             path = os.path.realpath(frame_provider.get_chunk(self.number, self.quality))
-            logger.info("the path is below!!!!!!!!!!")
-            logger.info(frame_provider.get_chunk(self.number, self.quality))
-            logger.info(path)
-            logger.info("==========================")
             return sendfile(request, path)
 
         elif self.type == 'frame':
@@ -726,17 +714,14 @@ class TaskViewSet(UploadMixin, viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def upload_finished(self, request):
-        logger.info("the upload finished is applied!!!!!!!")
-        logger.info("output the client_files!!!!!!")
-        logger.info(request.data)
+
         db_task = self.get_object() # call check_object_permissions as well
         task_data = db_task.data
         serializer = DataSerializer(task_data, data=request.data)
         serializer.is_valid(raise_exception=True)
         data = dict(serializer.validated_data.items())
-        logger.info(data)
         uploaded_files = task_data.get_uploaded_files()
-        logger.info(uploaded_files)
+
 
         # to_file = uploaded_files[0]['file']
 
@@ -765,7 +750,7 @@ class TaskViewSet(UploadMixin, viewsets.ModelViewSet):
         if 'stop_frame' not in serializer.validated_data:
             data['stop_frame'] = None
         task.create(db_task.id, data)
-        
+
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     @swagger_auto_schema(method='post', operation_summary='Method permanently attaches images or video to a task. Supports tus uploads, see more https://tus.io/',
@@ -796,20 +781,13 @@ class TaskViewSet(UploadMixin, viewsets.ModelViewSet):
         db_task = self.get_object() # call check_object_permissions as well
         task_data = db_task.data
         uploaded_files = task_data.get_uploaded_files()
-        logger.info(uploaded_files)
+
         return Response("success")
 
     @action(detail=True, methods=['OPTIONS', 'POST', 'GET'], url_path=r'data/?$')
     def data(self, request, pk):
-        logger.info("Start print log(i)")
-        logger.debug("Do something(i)")
-        logger.warning("Something maybe fail.(i)")
-        logger.info("Finish(i)")
         db_task = self.get_object() # call check_object_permissions as well
-        logger.info("输出db_task")
-        logger.info(db_task)
-        logger.info("输出request")
-        logger.info(request)
+
         if request.method == 'POST' or request.method == 'OPTIONS':
             task_data = db_task.data
             if not task_data:
@@ -870,8 +848,6 @@ class TaskViewSet(UploadMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=['GET', 'DELETE', 'PUT', 'PATCH'],
         serializer_class=LabeledDataSerializer)
     def annotations(self, request, pk):
-        logger.info("annotations function!!!!!!!!!(out)")
-        logger.info(request.data)
         db_task = self.get_object() # force to call check_object_permissions
         if request.method == 'GET':
             format_name = request.query_params.get('format')
@@ -892,9 +868,6 @@ class TaskViewSet(UploadMixin, viewsets.ModelViewSet):
         elif request.method == 'PUT':
             format_name = request.query_params.get('format')
             bands = request.query_params.get('bands')
-            logger.info("annotations function!!!!!!!!!(PUT)")
-            logger.info(format_name)
-            logger.info(bands)
             if format_name == "My mask 1.1":
                 myCache = CacheInteraction()
                 myCache.change_bands_buff(db_task.data,bands)
@@ -1052,22 +1025,22 @@ class JobViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
     @action(detail=True, methods=['GET', 'DELETE', 'PUT', 'PATCH'],
         serializer_class=LabeledDataSerializer)
     def annotations(self, request, pk):
-        
+
         self.get_object() # force to call check_object_permissions
         if request.method == 'GET':
+
             if JobViewSet.myMask_flag == 1:
                 db_job = self.get_object()
                 db_task = db_job.segment.task
                 files = db_task.data.get_uploaded_files()
-                logger.info("(GET)Job annotations fuctioning!!!!!!!!")
-                logger.info(files)
+
                 task_id = db_task.id
                 onefile_path = files[0]["file"]
                 p_c = len(onefile_path)-1
                 while(onefile_path[p_c]!=r"/"):
                     p_c -= 1
                 raw_data_path = onefile_path[:p_c]
-                logger.info(raw_data_path)
+
 
                 tiffiles_in = []
                 raw_files = os.listdir(raw_data_path)
@@ -1075,7 +1048,7 @@ class JobViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
                     raw_path = os.path.join(raw_data_path,raw_file)
                     if os.path.isdir(raw_path):
                         tiffiles_in = [os.path.join(raw_path,f) for f in os.listdir(raw_path) if f[-3:]=="tif"]
-                logger.info(tiffiles_in)
+
 
 
                 train_data_path = "/home/django/data/data/"+"g_sample.csv"
@@ -1084,17 +1057,15 @@ class JobViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
                 train_data = BasicDataset(train_data_path)
 
                 cnn, train_ls, loss_ls = train2(train_data)
-                logger.info("train done!!!")
-                logger.info(train_ls)
-                logger.info(loss_ls)
+
                 label_pred = net_predict(cnn,to_predict_data)
                 indexs = np.argwhere(abs(label_pred - 1)<0.001)+start_cla
- 
+
                 ls_index = []
                 for i in indexs:
                     ls_index.append(i[0])
                     ls_index.append(i[1])
-                logger.info(ls_index)
+
 
                 import collections
                 data = {'version': 16,
@@ -1122,8 +1093,7 @@ class JobViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
             return Response(data)
         elif request.method == 'PUT':
             format_name = request.query_params.get("format", "")
-            logger.info("format_name!!!!!!!!!!")
-            logger.info(format_name)
+
             if format_name == "My mask 1.1":
                 JobViewSet.myMask_flag = 1
             if format_name:

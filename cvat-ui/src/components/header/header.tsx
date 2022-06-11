@@ -383,7 +383,7 @@ function HeaderContainer(props: Props): JSX.Element {
                         history.push('/projects');
                     }}
                 >
-                    Projects
+                    项目
                 </Button>
                 <Button
                     className='cvat-header-button'
@@ -395,7 +395,7 @@ function HeaderContainer(props: Props): JSX.Element {
                         history.push('/tasks');
                     }}
                 >
-                    Tasks
+                    任务
                 </Button>
                 <Button
                     className='cvat-header-button'
@@ -407,7 +407,7 @@ function HeaderContainer(props: Props): JSX.Element {
                         history.push('/cloudstorages');
                     }}
                 >
-                    Cloud Storages
+                    云存储
                 </Button>
                 {isModelsPluginActive && (
                     <Button
@@ -420,7 +420,7 @@ function HeaderContainer(props: Props): JSX.Element {
                             history.push('/models');
                         }}
                     >
-                        Models
+                        模型
                     </Button>
                 )}
                 {isAnalyticsPluginActive && (
@@ -455,7 +455,7 @@ function HeaderContainer(props: Props): JSX.Element {
                         }}
                     />
                 </CVATTooltip>
-                <CVATTooltip overlay='Click to open guide'>
+                {/* <CVATTooltip overlay='Click to open guide'>
                     <Button
                         icon={<QuestionCircleOutlined />}
                         size='large'
@@ -469,7 +469,7 @@ function HeaderContainer(props: Props): JSX.Element {
                             window.open(GUIDE_URL, '_blank');
                         }}
                     />
-                </CVATTooltip>
+                </CVATTooltip> */}
                 <Dropdown placement='bottomRight' overlay={userMenu} className='cvat-header-menu-user-dropdown'>
                     <span>
                         <UserOutlined className='cvat-header-dropdown-icon' />

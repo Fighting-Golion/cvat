@@ -89,7 +89,7 @@ function ActionsMenuComponent(props: Props): JSX.Element {
         console.log(bands);
         onUploadAnnotations("My mask 1.1",file,bands);
       };
-    
+
       const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
       };
@@ -144,7 +144,7 @@ function ActionsMenuComponent(props: Props): JSX.Element {
       autoComplete="off"
     >
       <Form.Item
-        label="band1"
+        label="波段1"
         name="band1"
         rules={[{ required: true, message: 'Please input the band1!' }]}
       >
@@ -152,7 +152,7 @@ function ActionsMenuComponent(props: Props): JSX.Element {
       </Form.Item>
 
       <Form.Item
-        label="band2"
+        label="波段2"
         name="band2"
         rules={[{ required: true, message: 'Please input the band2!' }]}
       >
@@ -160,7 +160,7 @@ function ActionsMenuComponent(props: Props): JSX.Element {
       </Form.Item>
 
       <Form.Item
-        label="band3"
+        label="波段3"
         name="band3"
         rules={[{ required: true, message: 'Please input the band3!' }]}
       >
@@ -168,12 +168,12 @@ function ActionsMenuComponent(props: Props): JSX.Element {
       </Form.Item>
 
       <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
-        <Checkbox>save choices</Checkbox>
+        <Checkbox>保存选择</Checkbox>
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="submit">
-            Modify bands
+            更新波段
         </Button>
       </Form.Item>
     </Form>

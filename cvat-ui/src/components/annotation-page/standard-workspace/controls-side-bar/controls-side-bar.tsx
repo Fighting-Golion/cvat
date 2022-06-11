@@ -245,7 +245,7 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
     }
 
     return (
-        <Layout.Sider className='cvat-canvas-controls-sidebar' theme='light' width={44}>
+        <Layout.Sider style={{ height: 500 }}  className='cvat-canvas-controls-sidebar' theme='light' width={44}>
             <GlobalHotKeys keyMap={subKeyMap} handlers={handlers} />
 
             <ObservedCursorControl
@@ -253,20 +253,22 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                 canvasInstance={canvasInstance}
                 activeControl={activeControl}
             />
-            <ObservedMoveControl canvasInstance={canvasInstance} activeControl={activeControl} />
+
+
+            {/* <ObservedMoveControl canvasInstance={canvasInstance} activeControl={activeControl} />
             <ObservedRotateControl
                 anticlockwiseShortcut={normalizedKeyMap.ANTICLOCKWISE_ROTATION}
                 clockwiseShortcut={normalizedKeyMap.CLOCKWISE_ROTATION}
                 rotateFrame={rotateFrame}
-            />
+            /> */}
 
-            <hr />
+            {/* <hr />
 
             <ObservedFitControl canvasInstance={canvasInstance} />
-            <ObservedResizeControl canvasInstance={canvasInstance} activeControl={activeControl} />
+            <ObservedResizeControl canvasInstance={canvasInstance} activeControl={activeControl} /> */}
 
-            <hr />
-            <CVATTooltip title='load annotation' placement='right'>
+            {/* <hr /> */}
+            {/* <CVATTooltip title='load annotation' placement='right'>
             <Button
                     block
                     type='text'
@@ -274,11 +276,11 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                     className='cvat-menu-load-submenu-item-button'
                     onClick={LoadMyMask}
                 >
-                <EditOutlined />    
+                <EditOutlined />
             </Button>
-            </CVATTooltip>
+            </CVATTooltip> */}
 
-            
+
             <ObservedToolsControl />
             <ObservedOpenCVControl />
             <ObservedDrawRectangleControl
@@ -301,16 +303,16 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                 isDrawing={activeControl === ActiveControl.DRAW_POINTS}
                 disabled={!labels.length}
             />
-            <ObservedDrawCuboidControl
+            {/* <ObservedDrawCuboidControl
                 canvasInstance={canvasInstance}
                 isDrawing={activeControl === ActiveControl.DRAW_CUBOID}
                 disabled={!labels.length}
-            />
-            <ObservedSetupTagControl canvasInstance={canvasInstance} isDrawing={false} disabled={!labels.length} />
+            /> */}
+            {/* <ObservedSetupTagControl canvasInstance={canvasInstance} isDrawing={false} disabled={!labels.length} /> */}
 
-            <hr />
+            {/* <hr /> */}
 
-            <ObservedMergeControl
+            {/* <ObservedMergeControl
                 switchMergeShortcut={normalizedKeyMap.SWITCH_MERGE_MODE}
                 canvasInstance={canvasInstance}
                 activeControl={activeControl}
@@ -331,7 +333,7 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                 activeControl={activeControl}
                 splitTrack={splitTrack}
                 disabled={!labels.length}
-            />
+            /> */}
 
             <ExtraControlsControl />
         </Layout.Sider>

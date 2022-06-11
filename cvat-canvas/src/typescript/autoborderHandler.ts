@@ -123,10 +123,10 @@ export class AutoborderHandlerImpl implements AutoborderHandler {
                         circle.classList.add('cvat_canvas_autoborder_point');
                         circle.setAttribute('fill', shape.color);
                         circle.setAttribute('stroke', 'black');
-                        circle.setAttribute('stroke-width', `${consts.POINTS_STROKE_WIDTH / this.scale}`);
+                        circle.setAttribute('stroke-width', `${consts.POINTS_STROKE_WIDTH }`);
                         circle.setAttribute('cx', x);
                         circle.setAttribute('cy', y);
-                        circle.setAttribute('r', `${consts.BASE_POINT_SIZE / this.scale}`);
+                        circle.setAttribute('r', `${consts.BASE_POINT_SIZE }`);
 
                         const click = (event: MouseEvent): void => {
                             event.stopPropagation();
@@ -299,8 +299,8 @@ export class AutoborderHandlerImpl implements AutoborderHandler {
         this.scale = geometry.scale;
         this.groups.forEach((group: SVGGElement): void => {
             Array.from(group.children).forEach((circle: SVGCircleElement): void => {
-                circle.setAttribute('r', `${consts.BASE_POINT_SIZE / this.scale}`);
-                circle.setAttribute('stroke-width', `${consts.BASE_STROKE_WIDTH / this.scale}`);
+                circle.setAttribute('r', `${consts.BASE_POINT_SIZE }`);
+                circle.setAttribute('stroke-width', `${consts.BASE_STROKE_WIDTH }`);
             });
         });
     }

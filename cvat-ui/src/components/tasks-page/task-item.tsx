@@ -59,11 +59,11 @@ class TaskItemComponent extends React.PureComponent<TaskItemProps & RouteCompone
                 <br />
                 {owner && (
                     <>
-                        <Text type='secondary'>{`Created ${owner ? `by ${owner}` : ''} on ${created}`}</Text>
+                        <Text type='secondary'>{` ${owner ? `由 ${owner}` : ''} 创建于 ${created}`}</Text>
                         <br />
                     </>
                 )}
-                <Text type='secondary'>{`Last updated ${updated}`}</Text>
+                {/* <Text type='secondary'>{`Last updated ${updated}`}</Text> */}
             </Col>
         );
     }
@@ -95,7 +95,7 @@ class TaskItemComponent extends React.PureComponent<TaskItemProps & RouteCompone
             progressColor = 'cvat-task-pending-progress';
             progressText = (
                 <Text strong className={progressColor}>
-                    Pending
+                    待完成
                 </Text>
             );
         }
@@ -112,7 +112,7 @@ class TaskItemComponent extends React.PureComponent<TaskItemProps & RouteCompone
                         {progressText}
                     </Col>
                     <Col>
-                        <Text type='secondary'>{`${numOfCompleted} of ${numOfJobs} jobs`}</Text>
+                        <Text type='secondary'>{`${numOfCompleted} / ${numOfJobs} 项目`}</Text>
                     </Col>
                 </Row>
                 <Row>
@@ -154,13 +154,13 @@ class TaskItemComponent extends React.PureComponent<TaskItemProps & RouteCompone
                                 history.push(`/tasks/${id}`);
                             }}
                         >
-                            Open
+                            打开
                         </Button>
                     </Col>
                 </Row>
                 <Row justify='end'>
                     <Col className='cvat-item-open-task-actions'>
-                        <Text className='cvat-text-color'>Actions</Text>
+                        <Text className='cvat-text-color'>设置</Text>
                         <Dropdown overlay={<ActionsMenuContainer taskInstance={taskInstance} />}>
                             <Icon className='cvat-menu-icon' component={MenuIcon} />
                         </Dropdown>
@@ -184,7 +184,7 @@ class TaskItemComponent extends React.PureComponent<TaskItemProps & RouteCompone
 
         return (
             <Row className='cvat-tasks-list-item' justify='center' align='top' style={{ ...style }}>
-                {this.renderPreview()}
+                {/* {this.renderPreview()} */}
                 {this.renderDescription()}
                 {this.renderProgress()}
                 {this.renderNavigation()}

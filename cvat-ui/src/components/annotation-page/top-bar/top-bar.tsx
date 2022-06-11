@@ -175,7 +175,7 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
                     />
                 </Row>
             </Col> */}
-            <RightGroup
+            {/* <RightGroup
                 predictor={predictor}
                 workspace={workspace}
                 switchPredictor={switchPredictor}
@@ -184,7 +184,7 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
                 showStatistics={showStatistics}
                 isTrainingActive={isTrainingActive}
                 showFilters={showFilters}
-            />
+            /> */}
         </Row>
     );
 }

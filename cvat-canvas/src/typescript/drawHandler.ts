@@ -26,6 +26,7 @@ import {
 import { cuboidFrom4Points, intersection } from './cuboid';
 
 export interface DrawHandler {
+    setMap(_map: any):void;
     configurate(configuration: Configuration): void;
     draw(drawData: DrawData, geometry: Geometry): void;
     transform(geometry: Geometry): void;
@@ -80,6 +81,7 @@ export class DrawHandlerImpl implements DrawHandler {
     private configuration: Configuration;
     private autoborderHandler: AutoborderHandler;
     private autobordersEnabled: boolean;
+    private map:any;
 
     // we should use any instead of SVG.Shape because svg plugins cannot change declared interface
     // so, methods like draw() just undefined for SVG.Shape, but nevertheless they exist
@@ -330,6 +332,7 @@ export class DrawHandlerImpl implements DrawHandler {
         this.canvas.off('mousemove.draw');
         this.canvas.off('click.draw');
 
+
         if (this.pointsGroup) {
             this.pointsGroup.remove();
             this.pointsGroup = null;
@@ -448,6 +451,8 @@ export class DrawHandlerImpl implements DrawHandler {
     }
 
     private drawPolyshape(): void {
+
+
         let size = this.drawData.shapeType === 'cuboid' ? 4 : this.drawData.numberOfPoints;
 
         const sizeDecrement = (): void => {
@@ -505,6 +510,14 @@ export class DrawHandlerImpl implements DrawHandler {
             }
         });
 
+        var geoPoints:any[] = [];
+        let key = this.map.on('click',(evt:any)=>{
+            console.log(this.map.getCoordinateFromPixel(evt.pixel));
+            console.log(ol.proj.transform(this.map.getCoordinateFromPixel(evt.pixel),'EPSG:3857','EPSG:4326'));
+            geoPoints.push(this.map.getCoordinateFromPixel(evt.pixel));
+        }
+        );
+
         // We need scale just drawn points
         this.drawInstance.on('drawstart drawpoint', (e: CustomEvent): void => {
             this.transform(this.geometry);
@@ -514,12 +527,28 @@ export class DrawHandlerImpl implements DrawHandler {
 
         this.drawInstance.on('drawdone', (e: CustomEvent): void => {
             const targetPoints = readPointsFromShape((e.target as any as { instance: SVG.Shape }).instance);
+            console.log(targetPoints)
+            console.log(geoPoints)
+            var geoWrap = [];
+            geoWrap.push(geoPoints);
+            var polygon = new ol.geom.Polygon(geoWrap);
+            var feature = new ol.Feature(polygon);
+
+            var vectorSource = new ol.source.Vector();
+            vectorSource.addFeature(feature);
+
+            var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+            });
+            this.map.addLayer(vectorLayer);
+
             const { shapeType, redraw: clientID } = this.drawData;
             const { points, box } = shapeType === 'cuboid' ?
                 this.getFinalCuboidCoordinates(targetPoints) :
                 this.getFinalPolyshapeCoordinates(targetPoints, true);
+            ol.Observable.unByKey(key);
             this.release();
-
+            console.log(points)
             if (this.canceled) return;
             if (checkConstraint(shapeType, points, box)) {
                 if (shapeType === 'cuboid') {
@@ -540,7 +569,7 @@ export class DrawHandlerImpl implements DrawHandler {
             .polygon()
             .addClass('cvat_canvas_shape_drawing')
             .attr({
-                'stroke-width': consts.BASE_STROKE_WIDTH / this.geometry.scale,
+                'stroke-width': consts.BASE_STROKE_WIDTH ,
                 'fill-opacity': this.configuration.creationOpacity,
             });
 
@@ -555,7 +584,7 @@ export class DrawHandlerImpl implements DrawHandler {
             .polyline()
             .addClass('cvat_canvas_shape_drawing')
             .attr({
-                'stroke-width': consts.BASE_STROKE_WIDTH / this.geometry.scale,
+                'stroke-width': consts.BASE_STROKE_WIDTH ,
                 'fill-opacity': 0,
             });
 
@@ -930,21 +959,21 @@ export class DrawHandlerImpl implements DrawHandler {
     }
 
     public transform(geometry: Geometry): void {
-        this.geometry = geometry;
+        // this.geometry = geometry;
 
         if (this.shapeSizeElement && this.drawInstance && this.drawData.shapeType === 'rectangle') {
             this.shapeSizeElement.update(this.drawInstance);
         }
 
-        if (this.crosshair) {
-            this.crosshair.scale(this.geometry.scale);
-        }
+        // if (this.crosshair) {
+        //     this.crosshair.scale(this.geometry.scale);
+        // }
 
         if (this.pointsGroup) {
             for (const point of this.pointsGroup.children()) {
                 point.attr({
-                    'stroke-width': consts.POINTS_STROKE_WIDTH / geometry.scale,
-                    r: consts.BASE_POINT_SIZE / geometry.scale,
+                    'stroke-width': consts.POINTS_STROKE_WIDTH ,
+                    r: consts.BASE_POINT_SIZE,
                 });
             }
         }
@@ -952,14 +981,14 @@ export class DrawHandlerImpl implements DrawHandler {
         if (this.drawInstance) {
             this.drawInstance.draw('transform');
             this.drawInstance.attr({
-                'stroke-width': consts.BASE_STROKE_WIDTH / geometry.scale,
+                'stroke-width': consts.BASE_STROKE_WIDTH ,
             });
 
             const paintHandler = this.drawInstance.remember('_paintHandler');
 
             for (const point of (paintHandler as any).set.members) {
-                point.attr('stroke-width', `${consts.POINTS_STROKE_WIDTH / geometry.scale}`);
-                point.attr('r', `${consts.BASE_POINT_SIZE / geometry.scale}`);
+                point.attr('stroke-width', `${consts.POINTS_STROKE_WIDTH }`);
+                point.attr('r', `${consts.BASE_POINT_SIZE}`);
             }
         }
     }
@@ -981,5 +1010,9 @@ export class DrawHandlerImpl implements DrawHandler {
     public cancel(): void {
         this.canceled = true;
         this.release();
+    }
+
+    public setMap(_map: any): void {
+        this.map = _map;
     }
 }

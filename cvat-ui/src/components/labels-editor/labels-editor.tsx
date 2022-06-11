@@ -229,7 +229,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                                 );
                             }}
                         >
-                            Copy
+                            复制
                         </Button>
                     </CVATTooltip>
                 )}
@@ -238,7 +238,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     tab={(
                         <span>
                             <EditOutlined />
-                            <Text>Raw</Text>
+                            <Text>标注数据</Text>
                         </span>
                     )}
                     key='1'
@@ -250,7 +250,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     tab={(
                         <span>
                             <BuildOutlined />
-                            <Text>Constructor</Text>
+                            <Text>所有标注</Text>
                         </span>
                     )}
                     key='2'

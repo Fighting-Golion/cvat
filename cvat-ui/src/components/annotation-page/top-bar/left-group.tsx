@@ -82,7 +82,7 @@ function LeftGroup(props: Props): JSX.Element {
                 <Dropdown overlay={<AnnotationMenuContainer />}>
                     <Button type='link' className='cvat-annotation-header-button'>
                         <Icon component={MainMenuIcon} />
-                        Menu
+                        菜单
                     </Button>
                 </Dropdown>
                 <CVATTooltip overlay={`Save current changes ${saveShortcut}`}>
@@ -92,7 +92,7 @@ function LeftGroup(props: Props): JSX.Element {
                         className={saving ? 'cvat-annotation-disabled-header-button' : 'cvat-annotation-header-button'}
                     >
                         <Icon component={SaveIcon} />
-                        {saving ? 'Saving...' : 'Save'}
+                        {saving ? '保存中...' : '保存'}
                     </Button>
                 </CVATTooltip>
                 <CVATTooltip overlay={`Undo: ${undoAction} ${undoShortcut}`}>
@@ -103,7 +103,7 @@ function LeftGroup(props: Props): JSX.Element {
                         onClick={onUndoClick}
                     >
                         <Icon component={UndoIcon} />
-                        <span>Undo</span>
+                        <span>撤销</span>
                     </Button>
                 </CVATTooltip>
                 <CVATTooltip overlay={`Redo: ${redoAction} ${redoShortcut}`}>
@@ -114,14 +114,14 @@ function LeftGroup(props: Props): JSX.Element {
                         onClick={onRedoClick}
                     >
                         <Icon component={RedoIcon} />
-                        Redo
+                        恢复
                     </Button>
                 </CVATTooltip>
                 {includesDoneButton ? (
                     <CVATTooltip overlay={`Press "${drawShortcut}" to finish`}>
                         <Button type='link' className='cvat-annotation-header-button' onClick={onFinishDraw}>
                             <CheckOutlined />
-                            Done
+                            完成
                         </Button>
                     </CVATTooltip>
                 ) : null}
@@ -135,7 +135,7 @@ function LeftGroup(props: Props): JSX.Element {
                             onClick={shouldEnableToolsBlockerOnClick ? onSwitchToolsBlockerState : undefined}
                         >
                             <StopOutlined />
-                            Block
+                            暂停算法
                         </Button>
                     </CVATTooltip>
                 ) : null}

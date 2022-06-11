@@ -4,7 +4,7 @@
 
 import React from 'react';
 import Popover from 'antd/lib/popover';
-import Icon from '@ant-design/icons';
+import Icon,{AimOutlined} from '@ant-design/icons';
 
 import { Canvas } from 'cvat-canvas-wrapper';
 import { PointIcon } from 'icons';
@@ -42,7 +42,7 @@ function DrawPointsControl(props: Props): JSX.Element {
         };
 
     return disabled ? (
-        <Icon className='cvat-draw-points-control cvat-disabled-canvas-control' component={PointIcon} />
+        <Icon className='cvat-draw-points-control cvat-disabled-canvas-control' component={AimOutlined} style={{ fontSize: '40px' }} />
     ) : (
         <CustomPopover
             {...dynamcPopoverPros}
@@ -50,7 +50,7 @@ function DrawPointsControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.POINTS} />}
         >
-            <Icon {...dynamicIconProps} component={PointIcon} />
+            <Icon {...dynamicIconProps} component={AimOutlined} style={{ fontSize: '40px' }} />
         </CustomPopover>
     );
 }

@@ -104,21 +104,21 @@ function ObjectsSideBar(props: StateToProps & DispatchToProps & OwnProps): JSX.E
             </span>
 
             <Tabs type='card' defaultActiveKey='objects' className='cvat-objects-sidebar-tabs'>
-                <Tabs.TabPane tab={<Text strong>Objects</Text>} key='objects'>
+                <Tabs.TabPane tab={<Text strong>标注</Text>} key='objects'>
                     {objectsList}
                 </Tabs.TabPane>
-                <Tabs.TabPane forceRender tab={<Text strong>Labels</Text>} key='labels'>
+                <Tabs.TabPane forceRender tab={<Text strong>标签</Text>} key='labels'>
                     <LabelsList />
                 </Tabs.TabPane>
-
+{/*
                 {is2D ? (
                     <Tabs.TabPane tab={<Text strong>Issues</Text>} key='issues'>
                         <IssuesListComponent />
                     </Tabs.TabPane>
-                ) : null}
+                ) : null} */}
             </Tabs>
 
-            {!sidebarCollapsed && <AppearanceBlock />}
+            {/* {!sidebarCollapsed && <AppearanceBlock />} */}
         </Layout.Sider>
     );
 }

@@ -49,7 +49,7 @@ function ObjectListComponent(props: Props): JSX.Element {
 
     return (
         <>
-            <ObjectListHeader
+            {/* <ObjectListHeader
                 readonly={readonly}
                 statesHidden={statesHidden}
                 statesLocked={statesLocked}
@@ -64,7 +64,7 @@ function ObjectListComponent(props: Props): JSX.Element {
                 expandAllStates={expandAllStates}
                 hideAllStates={hideAllStates}
                 showAllStates={showAllStates}
-            />
+            /> */}
             <div className='cvat-objects-sidebar-states-list'>
                 {sortedStatesID.map(
                     (id: number): JSX.Element => (

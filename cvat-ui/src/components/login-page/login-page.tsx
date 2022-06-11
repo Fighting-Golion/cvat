@@ -38,7 +38,7 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
             <Content>
                 <Row justify='center' align='middle' style={{ height: '100%' }}>
                     <Col {...sizes}>
-                        <Title level={2}> Login </Title>
+                        <Title level={2}> 登录 </Title>
                         <LoginForm
                             fetching={fetching}
                             onSubmit={(loginData: LoginData): void => {
@@ -48,8 +48,8 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
                         <Row justify='start' align='top'>
                             <Col>
                                 <Text strong>
-                                    New to CVAT? Create
-                                    <Link to='/auth/register'> an account</Link>
+                                    没有账号? 创建
+                                    <Link to='/auth/register'> 一个账号</Link>
                                 </Text>
                             </Col>
                         </Row>
@@ -57,7 +57,7 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
                             <Row justify='start' align='top'>
                                 <Col>
                                     <Text strong>
-                                        <Link to='/auth/password/reset'>Forgot your password?</Link>
+                                        <Link to='/auth/password/reset'>忘记密码?</Link>
                                     </Text>
                                 </Col>
                             </Row>

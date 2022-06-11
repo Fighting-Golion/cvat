@@ -4,7 +4,7 @@
 
 import React from 'react';
 import Popover from 'antd/lib/popover';
-import Icon from '@ant-design/icons';
+import Icon,{GoldenFilled} from '@ant-design/icons';
 
 import { Canvas } from 'cvat-canvas-wrapper';
 import { PolygonIcon } from 'icons';
@@ -42,7 +42,7 @@ function DrawPolygonControl(props: Props): JSX.Element {
         };
 
     return disabled ? (
-        <Icon className='cvat-draw-polygon-control cvat-disabled-canvas-control' component={PolygonIcon} />
+        <Icon className='cvat-draw-polygon-control cvat-disabled-canvas-control' component={GoldenFilled} style={{ fontSize: '40px' }}/>
     ) : (
         <CustomPopover
             {...dynamcPopoverPros}
@@ -50,7 +50,7 @@ function DrawPolygonControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.POLYGON} />}
         >
-            <Icon {...dynamicIconProps} component={PolygonIcon} />
+            <Icon {...dynamicIconProps} component={GoldenFilled} style={{ fontSize: '40px' }} />
         </CustomPopover>
     );
 }

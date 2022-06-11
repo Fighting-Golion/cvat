@@ -25,7 +25,7 @@ COPY cvat-data/package*.json /tmp/cvat-data/
 
 # Install common dependencies
 WORKDIR /tmp/
-RUN npm ci --ignore-scripts
+RUN npm install --ignore-scripts  && npm install ol
 
 # Build source code
 COPY cvat-data/ /tmp/cvat-data/
@@ -37,6 +37,6 @@ RUN npm run build:cvat-ui
 
 FROM nginx:mainline-alpine
 # Replace default.conf configuration to remove unnecessary rules
-RUN sed -i "s/}/application\/wasm wasm;\n}/g" /etc/nginx/mime.types
+RUN sed -i "s/}/application\/wasm wasm;\n}/g" /etc/nginx/mime.types 
 COPY cvat-ui/react_nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=cvat-ui /tmp/cvat-ui/dist /usr/share/nginx/html/

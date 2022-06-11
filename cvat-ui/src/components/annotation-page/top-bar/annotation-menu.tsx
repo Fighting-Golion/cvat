@@ -192,7 +192,7 @@ function AnnotationMenuComponent(props: Props & RouteComponentProps): JSX.Elemen
                 onOk: () => {
                     onClickMenu(params);
                 },
-            }); 
+            });
         }else {
             onClickMenu(params);
         }
@@ -204,8 +204,8 @@ function AnnotationMenuComponent(props: Props & RouteComponentProps): JSX.Elemen
     };
 
     return (
-        <Menu onClick={(params: MenuInfo) => onClickMenuWrapper(params)} className='cvat-annotation-menu' selectable={false}>
-            {LoadSubmenu({
+        <Menu onClick={(params: MenuInfo) => onClickMenuWrapper(params)} className='cvat-annotation-menu' selectable={false} title="菜单">
+            {/* {LoadSubmenu({
                 loaders,
                 loadActivity,
                 onFileUpload: (format: string, file: File): void => {
@@ -227,9 +227,9 @@ function AnnotationMenuComponent(props: Props & RouteComponentProps): JSX.Elemen
                 },
                 menuKey: Actions.LOAD_JOB_ANNO,
                 taskDimension: jobInstance.dimension,
-            })}
-            <Menu.Item key={Actions.EXPORT_TASK_DATASET}>Export task dataset</Menu.Item>
-            <Menu.Item key={Actions.REMOVE_ANNO}>Remove annotations</Menu.Item>
+            })} */}
+            <Menu.Item key={Actions.EXPORT_TASK_DATASET}>导出标注</Menu.Item>
+            <Menu.Item key={Actions.REMOVE_ANNO}>清空所有标注</Menu.Item>
             <Menu.Item key={Actions.OPEN_TASK}>
                 <a
                     href={`/tasks/${taskID}`}
@@ -239,10 +239,10 @@ function AnnotationMenuComponent(props: Props & RouteComponentProps): JSX.Elemen
                         return false;
                     }}
                 >
-                    Open the task
+                    打开任务
                 </a>
             </Menu.Item>
-            {jobStage !== JobStage.ACCEPTANCE ? (
+            {/* {jobStage !== JobStage.ACCEPTANCE ? (
                 <Menu.SubMenu popupClassName='cvat-annotation-menu-job-state-submenu' key='job-state-submenu' title='Change job state'>
                     <Menu.Item key={`state:${JobState.NEW}`}>
                         <Text className={computeClassName(JobState.NEW)}>{JobState.NEW}</Text>
@@ -257,12 +257,12 @@ function AnnotationMenuComponent(props: Props & RouteComponentProps): JSX.Elemen
                         <Text className={computeClassName(JobState.COMPLETED)}>{JobState.COMPLETED}</Text>
                     </Menu.Item>
                 </Menu.SubMenu>
-            ) : null }
-            {[JobStage.ANNOTATION, JobStage.REVIEW].includes(jobStage) ?
+            ) : null } */}
+            {/* {[JobStage.ANNOTATION, JobStage.REVIEW].includes(jobStage) ?
                 <Menu.Item key={Actions.FINISH_JOB}>Finish the job</Menu.Item> : null}
             {jobStage === JobStage.ACCEPTANCE ?
-                <Menu.Item key={Actions.RENEW_JOB}>Renew the job</Menu.Item> : null}
-           
+                <Menu.Item key={Actions.RENEW_JOB}>Renew the job</Menu.Item> : null} */}
+
         </Menu>
     );
 }

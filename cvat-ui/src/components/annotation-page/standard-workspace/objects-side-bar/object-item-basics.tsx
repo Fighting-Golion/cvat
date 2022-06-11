@@ -103,7 +103,8 @@ function ItemTopComponent(props: Props): JSX.Element {
                     style={{ fontSize: 10 }}
                     className='cvat-objects-sidebar-state-item-object-type-text'
                 >
-                    {type}
+                    {/* {type} */}
+                    多边形
                 </Text>
             </Col>
             <Col span={12}>

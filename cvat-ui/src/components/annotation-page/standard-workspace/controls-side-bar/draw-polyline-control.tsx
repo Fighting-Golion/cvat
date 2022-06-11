@@ -4,7 +4,7 @@
 
 import React from 'react';
 import Popover from 'antd/lib/popover';
-import Icon from '@ant-design/icons';
+import Icon,{FundFilled} from '@ant-design/icons';
 
 import { Canvas } from 'cvat-canvas-wrapper';
 import { PolylineIcon } from 'icons';
@@ -42,7 +42,7 @@ function DrawPolylineControl(props: Props): JSX.Element {
         };
 
     return disabled ? (
-        <Icon className='cvat-draw-polyline-control cvat-disabled-canvas-control' component={PolylineIcon} />
+        <Icon className='cvat-draw-polyline-control cvat-disabled-canvas-control' component={FundFilled} style={{ fontSize: '40px' }}/>
     ) : (
         <CustomPopover
             {...dynamcPopoverPros}
@@ -50,7 +50,7 @@ function DrawPolylineControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.POLYLINE} />}
         >
-            <Icon {...dynamicIconProps} component={PolylineIcon} />
+            <Icon {...dynamicIconProps} component={FundFilled} style={{ fontSize: '40px' }}/>
         </CustomPopover>
     );
 }

@@ -131,7 +131,7 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
 
     const columns = [
         {
-            title: 'Job',
+            title: '任务名',
             dataIndex: 'job',
             key: 'job',
             render: (id: number): JSX.Element => (
@@ -149,49 +149,49 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
                 </div>
             ),
         },
-        {
-            title: 'Frames',
-            dataIndex: 'frames',
-            key: 'frames',
-            className: 'cvat-text-color cvat-job-item-frames',
-        },
-        {
-            title: 'Stage',
-            dataIndex: 'stage',
-            key: 'stage',
-            className: 'cvat-job-item-stage',
-            render: (jobInstance: any): JSX.Element => {
-                const { stage } = jobInstance;
+        // {
+        //     title: 'Frames',
+        //     dataIndex: 'frames',
+        //     key: 'frames',
+        //     className: 'cvat-text-color cvat-job-item-frames',
+        // },
+        // {
+        //     title: '阶段',
+        //     dataIndex: 'stage',
+        //     key: 'stage',
+        //     className: 'cvat-job-item-stage',
+        //     render: (jobInstance: any): JSX.Element => {
+        //         const { stage } = jobInstance;
 
-                return (
-                    <div>
-                        <Select
-                            value={stage}
-                            onChange={(newValue: string) => {
-                                jobInstance.stage = newValue;
-                                onJobUpdate(jobInstance);
-                            }}
-                        >
-                            <Select.Option value={JobStage.ANNOTATION}>{JobStage.ANNOTATION}</Select.Option>
-                            <Select.Option value={JobStage.REVIEW}>{JobStage.REVIEW}</Select.Option>
-                            <Select.Option value={JobStage.ACCEPTANCE}>{JobStage.ACCEPTANCE}</Select.Option>
-                        </Select>
-                        <CVATTooltip title={<ReviewSummaryComponent jobInstance={jobInstance} />}>
-                            <QuestionCircleOutlined />
-                        </CVATTooltip>
-                    </div>
-                );
-            },
-            sorter: sorter('stage.stage'),
-            filters: [
-                { text: 'annotation', value: 'annotation' },
-                { text: 'validation', value: 'validation' },
-                { text: 'acceptance', value: 'acceptance' },
-            ],
-            onFilter: (value: string | number | boolean, record: any) => record.stage.stage === value,
-        },
+        //         return (
+        //             <div>
+        //                 <Select
+        //                     value={stage}
+        //                     onChange={(newValue: string) => {
+        //                         jobInstance.stage = newValue;
+        //                         onJobUpdate(jobInstance);
+        //                     }}
+        //                 >
+        //                     <Select.Option value={JobStage.ANNOTATION}>{JobStage.ANNOTATION}</Select.Option>
+        //                     <Select.Option value={JobStage.REVIEW}>{JobStage.REVIEW}</Select.Option>
+        //                     <Select.Option value={JobStage.ACCEPTANCE}>{JobStage.ACCEPTANCE}</Select.Option>
+        //                 </Select>
+        //                 <CVATTooltip title={<ReviewSummaryComponent jobInstance={jobInstance} />}>
+        //                     <QuestionCircleOutlined />
+        //                 </CVATTooltip>
+        //             </div>
+        //         );
+        //     },
+        //     sorter: sorter('stage.stage'),
+        //     filters: [
+        //         { text: 'annotation', value: 'annotation' },
+        //         { text: 'validation', value: 'validation' },
+        //         { text: 'acceptance', value: 'acceptance' },
+        //     ],
+        //     onFilter: (value: string | number | boolean, record: any) => record.stage.stage === value,
+        // },
         {
-            title: 'State',
+            title: '状态',
             dataIndex: 'state',
             key: 'state',
             className: 'cvat-job-item-state',
@@ -199,7 +199,8 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
                 const { state } = jobInstance;
                 return (
                     <Text type='secondary'>
-                        {state}
+                        {/* {state} */}
+                        新任务
                     </Text>
                 );
             },
@@ -213,38 +214,38 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
             onFilter: (value: string | number | boolean, record: any) => record.state.state === value,
         },
         {
-            title: 'Started on',
+            title: '创建日期',
             dataIndex: 'started',
             key: 'started',
             className: 'cvat-text-color',
         },
         {
-            title: 'Duration',
+            title: '标注时间',
             dataIndex: 'duration',
             key: 'duration',
             className: 'cvat-text-color',
         },
-        {
-            title: 'Assignee',
-            dataIndex: 'assignee',
-            key: 'assignee',
-            className: 'cvat-job-item-assignee',
-            render: (jobInstance: any): JSX.Element => (
-                <UserSelector
-                    className='cvat-job-assignee-selector'
-                    value={jobInstance.assignee}
-                    onSelect={(value: User | null): void => {
-                        jobInstance.assignee = value;
-                        onJobUpdate(jobInstance);
-                    }}
-                />
-            ),
-            sorter: sorter('assignee.assignee.username'),
-            filters: collectUsers('assignee'),
-            onFilter: (value: string | number | boolean, record: any) => (
-                record.assignee.assignee?.username || false
-            ) === value,
-        },
+        // {
+        //     title: 'Assignee',
+        //     dataIndex: 'assignee',
+        //     key: 'assignee',
+        //     className: 'cvat-job-item-assignee',
+        //     render: (jobInstance: any): JSX.Element => (
+        //         <UserSelector
+        //             className='cvat-job-assignee-selector'
+        //             value={jobInstance.assignee}
+        //             onSelect={(value: User | null): void => {
+        //                 jobInstance.assignee = value;
+        //                 onJobUpdate(jobInstance);
+        //             }}
+        //         />
+        //     ),
+        //     sorter: sorter('assignee.assignee.username'),
+        //     filters: collectUsers('assignee'),
+        //     onFilter: (value: string | number | boolean, record: any) => (
+        //         record.assignee.assignee?.username || false
+        //     ) === value,
+        // },
     ];
 
     let completed = 0;
@@ -274,8 +275,8 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
         <div className='cvat-task-job-list'>
             <Row justify='space-between' align='middle'>
                 <Col>
-                    <Text className='cvat-text-color cvat-jobs-header'> Jobs </Text>
-                    <CVATTooltip trigger='click' title='Copied to clipboard!'>
+                    <Text className='cvat-text-color cvat-jobs-header'> 工作表 </Text>
+                    {/* <CVATTooltip trigger='click' title='Copied to clipboard!'>
                         <Button
                             type='link'
                             onClick={(): void => {
@@ -305,11 +306,11 @@ function JobListComponent(props: Props & RouteComponentProps): JSX.Element {
                             <CopyOutlined />
                             Copy
                         </Button>
-                    </CVATTooltip>
+                    </CVATTooltip> */}
                 </Col>
-                <Col>
+                {/* <Col>
                     <Text className='cvat-text-color'>{`${completed} of ${data.length} jobs`}</Text>
-                </Col>
+                </Col> */}
             </Row>
             <Table
                 className='cvat-task-jobs-table'

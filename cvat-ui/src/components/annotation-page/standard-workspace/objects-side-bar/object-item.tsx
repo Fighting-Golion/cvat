@@ -143,7 +143,7 @@ function ObjectItemComponent(props: Props): JSX.Element {
                     toForeground={toForeground}
                     resetCuboidPerspective={resetCuboidPerspective}
                 />
-                <ObjectButtonsContainer readonly={readonly} clientID={clientID} />
+                {/* <ObjectButtonsContainer readonly={readonly} clientID={clientID} /> */}
                 {!!attributes.length && (
                     <ItemDetails
                         readonly={readonly}
